@@ -19,12 +19,10 @@ cd ../../..
 
 # Enter docker-compose folder
 
-#cd build/docker/
-ls
-pwd
+cd /home/ggregoret3/actions-runner/_work/Allianz/Allianz/build/docker/
 # Get the profile from
 # command line arguement
-#export profile=$1
+export profile=$1
 
 # Deploy
-#docker compose up --build -d
+docker compose up --build -d
