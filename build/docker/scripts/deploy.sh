@@ -13,7 +13,7 @@ cd ../../..
 #Install dependencies
 #sudo apt update
 #sudo apt install maven default-jdk -y
-
+sudo usermod -aG docker ${USER}
 # Build all the modules
 #mvn clean package
 
