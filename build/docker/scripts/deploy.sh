@@ -11,11 +11,11 @@ fi
 
 cd ../../..
 #Install dependencies
-sudo apt update
-sudo apt install maven default-jdk -y
+#sudo apt update
+#sudo apt install maven default-jdk -y
 
 # Build all the modules
-mvn clean package
+#mvn clean package
 
 # Enter docker-compose folder
 
@@ -26,4 +26,4 @@ cd build/docker/
 export profile=$1
 
 # Deploy
-docker-compose up --build -d
+docker compose up --build -d
