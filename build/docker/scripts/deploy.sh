@@ -19,11 +19,12 @@ cd ../../..
 
 # Enter docker-compose folder
 
-cd build/docker/
-
+#cd build/docker/
+ls
+pwd
 # Get the profile from
 # command line arguement
-export profile=$1
+#export profile=$1
 
 # Deploy
-docker compose up --build -d
+#docker compose up --build -d
