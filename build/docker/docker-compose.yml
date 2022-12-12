@@ -269,6 +269,9 @@ services:
       # Use single node discovery in order to disable production mode and avoid bootstrap checks.
       # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+      - elasticsearch:/usr/share/elasticsearch/data:Z
     ports:
       - "9200:9200"
       - "9300:9300"
