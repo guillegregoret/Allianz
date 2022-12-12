@@ -1,6 +1,30 @@
 version: '3.8'
 
 services:
+  setup:
+    build:
+      context: setup/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    init: true
+    volumes:
+      - ./setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./setup/helpers.sh:/helpers.sh:ro,Z
+      - ./setup/roles:/roles:ro,Z
+      - setup:/state:Z
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
+      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+    networks:
+      - backend
+    depends_on:
+      - elasticsearch
   # ---------------------------
   # API Gateway
   # ---------------------------
@@ -236,17 +260,15 @@ services:
     container_name: elasticsearch
     hostname: elasticsearch
     environment:
-      - "cluster.name=elasticsearch"
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      # - "discovery.zen.ping.unicast.hosts=127.0.0.1"
-      - "discovery.type=single-node"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
+      node.name: elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      # Bootstrap password.
+      # Used to initialize the keystore during the initial startup of
+      # Elasticsearch. Ignored on subsequent runs.
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
+      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -265,12 +287,17 @@ services:
     hostname: logstash
     ports:
       - "5001:5001"
+      - 5044:5044
+      - 50000:50000/tcp
+      - 50000:50000/udp
+      - 9600:9600
     expose:
       - "5001"
     volumes:
-      - logstash:/tmp/
-    command: >
-      logstash --debug -e 'input { tcp { port => 5001 codec => json { charset => "UTF-8" } } } output { elasticsearch { hosts => "elasticsearch:9200" } }'
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
+    #command: >
+    #  logstash --debug -e 'input { tcp { port => 5001 codec => json { charset => "UTF-8" } } } output { elasticsearch { hosts => "elasticsearch:9200" } }'
     depends_on:
       - elasticsearch
     networks:
