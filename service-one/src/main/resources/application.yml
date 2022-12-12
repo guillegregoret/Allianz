@@ -1,0 +1,73 @@
+# GLOBAL CONFIGURATION
+
+spring:
+  application.name: service-one
+  jackson.serializationindent_output: true
+
+info:
+  component: Service-One
+  artifact: service-one
+  version: 5.0.0
+
+endpoints:
+  restart:
+    enabled: true
+  shutdown:
+    enabled: true
+  health:
+    sensitive: false
+
+management:
+  contextPath: /actuator
+  security.enabled: false
+
+server:
+  contextPath: /
+  port: 8082
+
+---
+#DEFAULT CONFIGURATION
+spring:
+  profiles: default
+  autoconfigure.exclude:
+    - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+    - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+  cloud.consul.enabled: false
+  data.mongodb.uri: mongodb://localhost:27017/service-one
+logging:
+  level:
+    org.springframework.web: DEBUG
+    com.mudigal.one: DEBUG
+    org.hibernate: DEBUG
+
+---
+# DOCKER CONFIGURATION
+spring:
+  profiles: docker
+  autoconfigure.exclude:
+    - org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
+  cloud:
+    consul:
+      host: consul
+      port: 8500
+      discovery:
+        hostName: service-one
+        instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+        healthCheckPath: ${management.contextPath}/health
+        healthCheckInterval: 15s
+  data:
+    mongodb.uri: mongodb://service-one-db/service-one
+  rabbitmq:
+    host: rabbit
+    port: 5672
+    username: mudigal
+    password: mudigal
+    virtualHost: /
+
+logstash.servers: logstash:5001
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    com.mudigal.one: DEBUG
+    org.hibernate: DEBUG
