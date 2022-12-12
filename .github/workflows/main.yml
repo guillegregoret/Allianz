@@ -2,7 +2,7 @@ name: Build everything
 on:
   push:
     branches:
-      - main
+      - master
 jobs:
   Build_Images:
     runs-on: self-hosted
