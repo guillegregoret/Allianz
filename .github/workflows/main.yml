@@ -1,0 +1,15 @@
+name: Build everything
+on:
+  push:
+    branches:
+      - main
+jobs:
+  Build_Images:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run build script
+      run: |
+         chmod +x ./build/docker/scripts/deploy.sh
+         ./build/docker/scripts/deploy.sh docker
+      shell: bash
