@@ -11,8 +11,8 @@ fi
 
 cd ../../..
 #Install dependencies
-apt update
-apt install maven default-jdk -y
+sudo apt update
+sudo apt install maven default-jdk -y
 
 # Build all the modules
 mvn clean package
