@@ -9,10 +9,10 @@ Input Parameters :
 fi
 
 
-cd ../../..
+cd /home/ggregoret3/actions-runner/_work/Allianz/Allianz/
 #Install dependencies
-#sudo apt update
-#sudo apt install maven default-jdk -y
+sudo apt update
+sudo apt install maven default-jdk -y
 sudo usermod -aG docker ${USER}
 # Build all the modules
 mvn clean package
@@ -22,7 +22,7 @@ mvn clean package
 cd /home/ggregoret3/actions-runner/_work/Allianz/Allianz/build/docker/
 # Get the profile from
 # command line arguement
-export profile=$1
+#export profile=$1
 
 # Deploy
 docker compose up --build -d
