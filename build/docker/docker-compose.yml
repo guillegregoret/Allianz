@@ -40,7 +40,7 @@ services:
       - consul
       - logstash
     environment:
-      - SPRING_PROFILES_ACTIVE=${profile}
+      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - backend
 
@@ -59,7 +59,7 @@ services:
       - consul
       - logstash
     environment:
-      - SPRING_PROFILES_ACTIVE=${profile}
+      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - backend
 
@@ -102,7 +102,7 @@ services:
       - consul
       - logstash
     environment:
-      - SPRING_PROFILES_ACTIVE=${profile}
+      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - backend
 
@@ -236,6 +236,12 @@ services:
   # Log Vizualization 
   # -----------------------------
   kibana:
+    build:
+      context: kibana/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     image: kibana:8.2.3
     platform: linux/amd64
     container_name: kibana
@@ -245,7 +251,7 @@ services:
     expose:
       - "5601"
     environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
     links:
       - elasticsearch
     networks:
@@ -257,6 +263,10 @@ services:
   elasticsearch:
     image: elasticsearch:8.2.3
     platform: linux/amd64
+    build:
+      context: elasticsearch/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
     container_name: elasticsearch
     hostname: elasticsearch
     environment:
@@ -284,12 +294,16 @@ services:
   # Log Collection and Format
   # -----------------------------
   logstash:
+    build:
+      context: logstash/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
     image: logstash:8.2.3
     platform: linux/amd64
     container_name: log-stash
     hostname: logstash
     ports:
-      - "5001:5001"
+      - 5001:5001
       - 5044:5044
       - 50000:50000/tcp
       - 50000:50000/udp
@@ -301,6 +315,9 @@ services:
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
     #command: >
     #  logstash --debug -e 'input { tcp { port => 5001 codec => json { charset => "UTF-8" } } } output { elasticsearch { hosts => "elasticsearch:9200" } }'
+    environment:
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
     depends_on:
       - elasticsearch
     networks:
@@ -315,4 +332,5 @@ networks:
 volumes:
   mongodata:
   logstash:
-  
+  elasticsearch:
+  setup:

@@ -15,7 +15,7 @@ cd ../../..
 #sudo apt install maven default-jdk -y
 sudo usermod -aG docker ${USER}
 # Build all the modules
-#mvn clean package
+mvn clean package
 
 # Enter docker-compose folder
 
