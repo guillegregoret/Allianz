@@ -1,0 +1,41 @@
+[
+    {
+        "name": "allianz-service-one",
+        "image": "guillegregoret/allianz-serviceone:latest", 
+        "cpu": 1024,
+        "memory": 1024,
+        "environment": [
+          {"name": "SPRING_PROFILES_ACTIVE", "value": "docker"},
+          {"name": "CONSUL_HOST", "value": "${CONSUL_HOST}"},
+          {"name": "CONSUL_PORT", "value": "${CONSUL_PORT}"},
+          {"name": "MONGO_HOST", "value": "${MONGO_HOST}"},
+          {"name": "MONGO_DB", "value": "${MONGO_DB}"},
+          {"name": "MONGO_USER", "value": "${MONGO_USER}"},
+          {"name": "MONGO_PASS", "value": "${MONGO_PASS}"},
+          {"name": "LOGSTASH_HOST", "value": "${LOGSTASH_HOST}"},
+          {"name": "LOGSTASH_PORT", "value": "${LOGSTASH_PORT}"}
+        ],
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "allianz-service-one",
+            "awslogs-create-group": "true",
+            "awslogs-region": "us-east-1",
+            "awslogs-stream-prefix": "ecs"
+          }
+        },
+        "links": [],
+        "portMappings": [
+            { 
+                "hostPort": 0,
+                "containerPort": 8082,
+                "protocol": "tcp"
+            }
+        ],
+        "essential": true,
+        "entryPoint": [],
+        "command": [],
+        "mountPoints": [],
+        "volumesFrom": []
+    }
+  ]

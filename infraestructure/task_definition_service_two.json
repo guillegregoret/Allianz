@@ -1,0 +1,41 @@
+[
+    {
+        "name": "allianz-service-two",
+        "image": "guillegregoret/allianz-servicetwo:latest", 
+        "cpu": 1024,
+        "memory": 1024,
+        "environment": [
+          {"name": "SPRING_PROFILES_ACTIVE", "value": "docker"},
+          {"name": "CONSUL_HOST", "value": "${CONSUL_HOST}"},
+          {"name": "CONSUL_PORT", "value": "${CONSUL_PORT}"},
+          {"name": "RDS_HOST", "value": "${RDS_HOST}"},
+          {"name": "RDS_DB", "value": "${RDS_DB}"},
+          {"name": "RDS_USER", "value": "${RDS_USER}"},
+          {"name": "RDS_PASS", "value": "${RDS_PASS}"},
+          {"name": "LOGSTASH_HOST", "value": "${LOGSTASH_HOST}"},
+          {"name": "LOGSTASH_PORT", "value": "${LOGSTASH_PORT}"}
+        ],
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "allianz-service-two",
+            "awslogs-create-group": "true",
+            "awslogs-region": "us-east-1",
+            "awslogs-stream-prefix": "ecs"
+          }
+        },
+        "links": [],
+        "portMappings": [
+            { 
+                "hostPort": 0,
+                "containerPort": 8084,
+                "protocol": "tcp"
+            }
+        ],
+        "essential": true,
+        "entryPoint": [],
+        "command": [],
+        "mountPoints": [],
+        "volumesFrom": []
+    }
+  ]
