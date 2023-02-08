@@ -29,10 +29,10 @@ resource "aws_alb_target_group" "service-one-public" {
 
   health_check {
     healthy_threshold   = "2"
-    interval            = "10"
+    interval            = "15"
     path                = "/actuator/health"
     protocol            = "HTTP"
-    unhealthy_threshold = "2"
+    unhealthy_threshold = "8"
     timeout             = "6"
   }
 }
@@ -47,10 +47,10 @@ resource "aws_alb_target_group" "service-two-public" {
 
   health_check {
     healthy_threshold   = "2"
-    interval            = "10"
+    interval            = "15"
     path                = "/actuator/health"
     protocol            = "HTTP"
-    unhealthy_threshold = "2"
+    unhealthy_threshold = "8"
     timeout             = "6"
   }
 }

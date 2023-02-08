@@ -18,6 +18,10 @@ resource "aws_docdb_cluster_instance" "cluster_instances" {
   identifier         = "docdb-cluster-allianz"
   cluster_identifier = aws_docdb_cluster.docdb_cluster.id
   instance_class     = "db.t3.medium"
+
+  lifecycle {
+    ignore_changes = [identifier]
+  }
 }
 
 resource "aws_docdb_cluster" "docdb_cluster" {
@@ -28,6 +32,11 @@ resource "aws_docdb_cluster" "docdb_cluster" {
   db_cluster_parameter_group_name = aws_docdb_cluster_parameter_group.docdb-paramgroup-allianz.id
   vpc_security_group_ids          = ["${aws_security_group.docdb-sg.id}"]
   db_subnet_group_name    = "${aws_docdb_subnet_group.docdb_subnetgroup.name}"
+
+  lifecycle {
+    ignore_changes = [availability_zones]
+  }
+
 }
 
 resource "aws_docdb_cluster_parameter_group" "docdb-paramgroup-allianz" {
