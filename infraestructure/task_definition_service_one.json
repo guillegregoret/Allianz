@@ -2,8 +2,9 @@
     {
         "name": "allianz-service-one",
         "image": "guillegregoret/allianz-serviceone:latest", 
-        "cpu": 1024,
+        "cpu": 512,
         "memory": 1024,
+        "networkMode": "awsvpc",
         "environment": [
           {"name": "SPRING_PROFILES_ACTIVE", "value": "docker"},
           {"name": "CONSUL_HOST", "value": "${CONSUL_HOST}"},
@@ -27,7 +28,7 @@
         "links": [],
         "portMappings": [
             { 
-                "hostPort": 0,
+                "hostPort": 8082,
                 "containerPort": 8082,
                 "protocol": "tcp"
             }

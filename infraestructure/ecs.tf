@@ -82,6 +82,16 @@ resource "aws_iam_role_policy_attachment" "Cloudwatch_FullAccess" {
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "Cloudwatch_FullAccess_task_role" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "Cloudwatch_FullAccess_task_execution" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}
+
 resource "aws_iam_role_policy_attachment" "ecs_agent" {
   role       = aws_iam_role.ecs_agent.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
@@ -196,13 +206,13 @@ resource "aws_ecs_service" "allianz-service-two-service" {
 
 resource "aws_ecs_task_definition" "task_definition_service_one" {
   container_definitions = data.template_file.task_definition_service_one_json.rendered # task definition json file location
-  #execution_role_arn       = aws_iam_instance_profile.ecsTaskExecutionRole.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
   family                   = "allianz-service-one" # task name
-  network_mode             = "bridge"              # network mode awsvpc, brigde
+  network_mode             = "awsvpc"              # network mode awsvpc, brigde
   memory                   = "1024"
-  cpu                      = "1024"
-  requires_compatibilities = ["EC2"] # Fargate or EC2
-  #task_role_arn            = aws_iam_instance_profile.ecsTaskExecutionRole.arn
+  cpu                      = "512"
+  requires_compatibilities = ["FARGATE"] # Fargate or EC2
 
   depends_on = [aws_db_instance.allianz_mysql, aws_instance.consul_instance, aws_instance.logstash_instance, aws_docdb_cluster_instance.cluster_instances]
 }
@@ -234,6 +244,11 @@ resource "aws_ecs_service" "allianz-service-one-service" {
   name            = "allianz-service-one-service"                           # Name of service
   task_definition = aws_ecs_task_definition.task_definition_service_one.arn # Attaching Task to service
 
+ network_configuration {
+   security_groups  = [aws_security_group.sg-ec2-ecs.id]
+   subnets          = [module.vpc.private_subnets[0]]
+   assign_public_ip = false
+ }
 
   load_balancer {
     container_name   = "allianz-service-one" #"container_${var.component}_${var.environment}"
@@ -244,3 +259,82 @@ resource "aws_ecs_service" "allianz-service-one-service" {
 }
 
 
+### Fargate
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "service-one-ecsTaskExecutionRole"
+ 
+  assume_role_policy = <<EOF
+{
+ "Version": "2012-10-17",
+ "Statement": [
+   {
+     "Action": "sts:AssumeRole",
+     "Principal": {
+       "Service": "ecs-tasks.amazonaws.com"
+     },
+     "Effect": "Allow",
+     "Sid": ""
+   }
+ ]
+}
+EOF
+}
+ 
+resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attachment" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+resource "aws_iam_role" "ecs_task_role" {
+  name = "service-one-ecsTaskRole"
+ 
+  assume_role_policy = <<EOF
+{
+ "Version": "2012-10-17",
+ "Statement": [
+   {
+     "Action": "sts:AssumeRole",
+     "Principal": {
+       "Service": "ecs-tasks.amazonaws.com"
+     },
+     "Effect": "Allow",
+     "Sid": ""
+   }
+ ]
+}
+EOF
+}
+ 
+resource "aws_iam_policy" "dynamodb" {
+  name        = "service-one-task-policy-dynamodb"
+  description = "Policy that allows access to DynamoDB"
+ 
+ policy = <<EOF
+{
+   "Version": "2012-10-17",
+   "Statement": [
+       {
+           "Effect": "Allow",
+           "Action": [
+               "dynamodb:CreateTable",
+               "dynamodb:UpdateTimeToLive",
+               "dynamodb:PutItem",
+               "dynamodb:DescribeTable",
+               "dynamodb:ListTables",
+               "dynamodb:DeleteItem",
+               "dynamodb:GetItem",
+               "dynamodb:Scan",
+               "dynamodb:Query",
+               "dynamodb:UpdateItem",
+               "dynamodb:UpdateTable"
+           ],
+           "Resource": "*"
+       }
+   ]
+}
+EOF
+}
+ 
+resource "aws_iam_role_policy_attachment" "ecs-task-role-policy-attachment" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.dynamodb.arn
+}

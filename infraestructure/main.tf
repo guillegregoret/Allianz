@@ -159,19 +159,19 @@ resource "aws_security_group_rule" "private_network_rule" {
   security_group_id = aws_security_group.private_alb.id
 }
 
-resource "aws_security_group_rule" "public_in_http" {
+resource "aws_security_group_rule" "public_in_https_svc_one" {
   type              = "ingress"
-  from_port         = 80
-  to_port           = 80
+  from_port         = 8082
+  to_port           = 8082
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.public.id
 }
 
-resource "aws_security_group_rule" "public_in_https" {
+resource "aws_security_group_rule" "public_in_https_svc_two" {
   type              = "ingress"
-  from_port         = 443
-  to_port           = 443
+  from_port         = 8084
+  to_port           = 8084
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.public.id

@@ -1,6 +1,6 @@
 
 data "template_file" "user_data_logstash" {
-  template = "${file("user_data_logstash.tpl")}"
+  template = file("user_data_logstash.tpl")
 }
 
 #resource "aws_spot_instance_request" "spot" {

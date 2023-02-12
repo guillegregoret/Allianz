@@ -4,17 +4,13 @@ CMD logstash -e ' \
 input { \
     tcp {\
         port => 5001\
-        codec => json\
-        {\
-            charset => "UTF-8"\
-        }\
     }\
 }\
 output {\
      opensearch {\
-         hosts       => "${HOST}"\
-         user        => "${USER}"\
-         password    => "${PASSWD}"\
+         hosts       => "https://search-allianz-opensearch-gh5nnr6krjj4gxxsfdrziury4i.us-east-1.es.amazonaws.com:443" \
+         user        => "allianz-os" \
+         password    => "3EF92b15150894018E05-747d4CFAAeB0" \
          index       => "logstash-logs-%%{+YYYY.MM.dd}"\
          ecs_compatibility => disabled\
          ssl_certificate_verification => false\

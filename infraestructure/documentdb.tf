@@ -31,7 +31,7 @@ resource "aws_docdb_cluster" "docdb_cluster" {
   master_password                 = var.docdb_password
   db_cluster_parameter_group_name = aws_docdb_cluster_parameter_group.docdb-paramgroup-allianz.id
   vpc_security_group_ids          = ["${aws_security_group.docdb-sg.id}"]
-  db_subnet_group_name    = "${aws_docdb_subnet_group.docdb_subnetgroup.name}"
+  db_subnet_group_name            = aws_docdb_subnet_group.docdb_subnetgroup.name
 
   lifecycle {
     ignore_changes = [availability_zones]
@@ -56,5 +56,5 @@ resource "aws_docdb_cluster_parameter_group" "docdb-paramgroup-allianz" {
 
 resource "aws_docdb_subnet_group" "docdb_subnetgroup" {
   name       = "allianz-docdb-subnetgroup"
-  subnet_ids = [module.vpc.private_subnets[0],module.vpc.private_subnets[1]]
+  subnet_ids = [module.vpc.private_subnets[0], module.vpc.private_subnets[1]]
 }
