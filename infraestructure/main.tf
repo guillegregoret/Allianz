@@ -23,17 +23,8 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 4.40"
     }
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = ">= 3.4"
-    }
   }
 }
-
-provider "cloudflare" {
-  api_token = var.cloudflare_api_token
-}
-
 
 ## Locals
 

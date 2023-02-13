@@ -95,7 +95,7 @@ resource "aws_iam_role_policy_attachment" "Cloudwatch_FullAccess_task_execution"
 resource "aws_iam_role_policy_attachment" "ecs_agent" {
   role       = aws_iam_role.ecs_agent.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-  depends_on = ["aws_iam_role.ecs_agent"]
+  depends_on = [aws_iam_role.ecs_agent]
 }
 
 resource "aws_iam_instance_profile" "ecs_agent" {
@@ -131,7 +131,7 @@ resource "aws_instance" "ec2_instance" {
   }
 
   lifecycle {
-    ignore_changes = ["key_name", "ebs_optimized", "private_ip"]
+    ignore_changes = [key_name, ebs_optimized, private_ip]
   }
 }
 
@@ -193,7 +193,7 @@ resource "aws_ecs_service" "allianz-service-two-service" {
     container_port   = "8084"
     target_group_arn = aws_alb_target_group.service-two-public.arn # attaching load_balancer target group to ecs
   }
-  depends_on = ["aws_security_group.sg-ec2-ecs"]
+  depends_on = [aws_security_group.sg-ec2-ecs, time_sleep.wait_120_seconds]
 }
 
 ############################################################
@@ -255,7 +255,7 @@ resource "aws_ecs_service" "allianz-service-one-service" {
     container_port   = "8082"
     target_group_arn = aws_alb_target_group.service-one-public.arn # attaching load_balancer target group to ecs
   }
-  depends_on = ["aws_security_group.sg-ec2-ecs"]
+  depends_on = [aws_security_group.sg-ec2-ecs, time_sleep.wait_120_seconds]
 }
 
 
@@ -337,4 +337,15 @@ EOF
 resource "aws_iam_role_policy_attachment" "ecs-task-role-policy-attachment" {
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = aws_iam_policy.dynamodb.arn
+}
+
+resource "time_sleep" "wait_120_seconds" {
+  depends_on = [aws_db_instance.allianz_mysql, aws_docdb_cluster.docdb_cluster]
+
+  create_duration = "120s"
+}
+
+# This resource will create (at least) 30 seconds after null_resource.previous
+resource "null_resource" "next" {
+  depends_on = [time_sleep.wait_120_seconds]
 }

@@ -28,6 +28,7 @@ resource "aws_db_instance" "allianz_mysql" {
   engine                      = "mysql"
   engine_version              = "8.0.28"
   instance_class              = "db.t3.small"
+  identifier = var.rds_db_name
   db_name                     = var.rds_db_name
   username                    = var.rds_username
   password                    = var.rds_password
