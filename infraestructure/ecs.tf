@@ -240,7 +240,7 @@ data "template_file" "task_definition_service_one_json" {
 resource "aws_ecs_service" "allianz-service-one-service" {
   cluster         = aws_ecs_cluster.cluster.id                              # ecs cluster id
   desired_count   = 1                                                       # no of task running
-  launch_type     = "EC2"                                                   # Cluster type ECS OR FARGATE
+  launch_type     = "FARGATE"                                                   # Cluster type ECS OR FARGATE
   name            = "allianz-service-one-service"                           # Name of service
   task_definition = aws_ecs_task_definition.task_definition_service_one.arn # Attaching Task to service
 
