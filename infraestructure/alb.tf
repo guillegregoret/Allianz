@@ -8,15 +8,6 @@ resource "aws_lb" "public-load-balancer" {
   security_groups    = [aws_security_group.public.id]
 }
 
-### ALB Privado ###
-resource "aws_lb" "private-load-balancer" {
-  internal           = true
-  name               = "allianz-private-alb"
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.private_alb.id]
-  subnets            = module.vpc.private_subnets # Subnets privadas
-}
-
 ##### ALB - Target Groups #####
 
 resource "aws_alb_target_group" "service-one-public" {

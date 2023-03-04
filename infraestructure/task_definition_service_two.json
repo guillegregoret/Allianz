@@ -12,6 +12,9 @@
           {"name": "RDS_DB", "value": "${RDS_DB}"},
           {"name": "RDS_USER", "value": "${RDS_USER}"},
           {"name": "RDS_PASS", "value": "${RDS_PASS}"},
+          {"name": "RABBIT_USER", "value": "${RABBIT_USER}"},
+          {"name": "RABBIT_PASS", "value": "${RABBIT_PASS}"},
+          {"name": "RABBIT_HOST", "value": "${RABBIT_HOST}"},
           {"name": "LOGSTASH_HOST", "value": "${LOGSTASH_HOST}"},
           {"name": "LOGSTASH_PORT", "value": "${LOGSTASH_PORT}"}
         ],

@@ -171,6 +171,9 @@ data "template_file" "task_definition_service_two_json" {
     RDS_PASS      = var.rds_password
     LOGSTASH_HOST = aws_instance.logstash_instance.private_dns
     LOGSTASH_PORT = "5001"
+    RABBIT_HOST = "b-a2d3c8ac-eebc-43d5-aa2b-9b917560c582.mq.us-east-1.amazonaws.com"
+    RABBIT_USER = "allianz_user_mq"
+    RABBIT_PASS = "80EF9A1A04CED5D79F7D161A6039ACF14FA505EEE3EE728248710C674EDC1E13"
   }
 
 }
@@ -229,6 +232,9 @@ data "template_file" "task_definition_service_one_json" {
     MONGO_PASS    = var.docdb_password
     LOGSTASH_HOST = aws_instance.logstash_instance.private_dns
     LOGSTASH_PORT = "5001"
+    RABBIT_HOST = "b-a2d3c8ac-eebc-43d5-aa2b-9b917560c582.mq.us-east-1.amazonaws.com"
+    RABBIT_USER = "allianz_user_mq"
+    RABBIT_PASS = "80EF9A1A04CED5D79F7D161A6039ACF14FA505EEE3EE728248710C674EDC1E13"
   }
 }
 

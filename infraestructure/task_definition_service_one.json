@@ -13,6 +13,9 @@
           {"name": "MONGO_DB", "value": "${MONGO_DB}"},
           {"name": "MONGO_USER", "value": "${MONGO_USER}"},
           {"name": "MONGO_PASS", "value": "${MONGO_PASS}"},
+          {"name": "RABBIT_USER", "value": "${RABBIT_USER}"},
+          {"name": "RABBIT_PASS", "value": "${RABBIT_PASS}"},
+          {"name": "RABBIT_HOST", "value": "${RABBIT_HOST}"},
           {"name": "LOGSTASH_HOST", "value": "${LOGSTASH_HOST}"},
           {"name": "LOGSTASH_PORT", "value": "${LOGSTASH_PORT}"}
         ],
