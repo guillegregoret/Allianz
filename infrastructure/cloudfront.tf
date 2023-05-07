@@ -1,6 +1,7 @@
 
 ################################################################################################
 # Cloudfront distribution for main s3 site.
+
 resource "aws_cloudfront_distribution" "root_s3_distribution" {
   origin {
     domain_name = aws_s3_bucket.root_bucket.website_endpoint
@@ -16,7 +17,7 @@ resource "aws_cloudfront_distribution" "root_s3_distribution" {
   enabled         = true
   is_ipv6_enabled = true
 
-  aliases = [var.domain_name]
+  #aliases = [var.domain_name]
 
   custom_error_response {
     error_caching_min_ttl = 0

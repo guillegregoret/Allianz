@@ -41,13 +41,13 @@ locals {
 
 provider "aws" {
   region = "us-east-1"
-  #profile = "dev"
+  profile = "acloudguru"
 }
 
 provider "aws" {
   alias  = "acm_provider"
   region = "us-east-1"
-  #profile = "dev"
+  profile = "acloudguru"
 }
 
 ## S3 state bucket - persiste el estado de terraform, es decir ata cada recurso declarado en codigo con su respectivo servicio creado en AWS
