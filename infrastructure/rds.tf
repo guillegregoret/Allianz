@@ -24,7 +24,7 @@ resource "aws_security_group_rule" "mysql_inbound_access" {
 
 resource "aws_db_instance" "allianz_mysql" {
   allocated_storage           = 20
-  storage_type                = "gp2"
+  storage_type                = "gp3"
   engine                      = "mysql"
   engine_version              = "8.0.28"
   instance_class              = "db.t3.small"

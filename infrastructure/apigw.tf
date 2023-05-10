@@ -1,7 +1,24 @@
 resource "aws_apigatewayv2_api" "apigateway" {
-  name          = "example-http-api"
+  name          = "allianz-api-gateway"
   protocol_type = "HTTP"
 }
+# Ownership of domain name
+resource "aws_apigatewayv2_domain_name" "apigateway-domain-name" {
+  domain_name = "api.allianz.gregoret.com.ar"
+
+  domain_name_configuration {
+    certificate_arn = aws_acm_certificate.ssl_certificate.arn
+    endpoint_type   = "REGIONAL"
+    security_policy = "TLS_1_2"
+  }
+}
+# Domain Mapping
+resource "aws_apigatewayv2_api_mapping" "api-mapping" {
+  api_id      = aws_apigatewayv2_api.apigateway.id
+  domain_name = aws_apigatewayv2_domain_name.apigateway-domain-name.id
+  stage       = aws_apigatewayv2_stage.example.id
+}
+
 # Service One API 
 resource "aws_apigatewayv2_integration" "service-one-integration" {
   api_id           = aws_apigatewayv2_api.apigateway.id
@@ -16,11 +33,15 @@ resource "aws_apigatewayv2_integration" "service-one-integration" {
   tls_config {
     server_name_to_verify = "api.allianz.gregoret.com.ar"
   }
+
+  request_parameters = {
+    "overwrite:path"                   = "$request.path.proxy"
+  }
 }
 
 resource "aws_apigatewayv2_route" "service-one-route" {
   api_id    = aws_apigatewayv2_api.apigateway.id
-  route_key = "ANY /service-one"
+  route_key = "ANY /service-one/{proxy+}"
 
   target = "integrations/${aws_apigatewayv2_integration.service-one-integration.id}"
 }
@@ -39,11 +60,15 @@ resource "aws_apigatewayv2_integration" "service-two-integration" {
   tls_config {
     server_name_to_verify = "api.allianz.gregoret.com.ar"
   }
+
+    request_parameters = {
+    "overwrite:path"                   = "$request.path.proxy"
+  }
 }
 
 resource "aws_apigatewayv2_route" "service-two-route" {
   api_id    = aws_apigatewayv2_api.apigateway.id
-  route_key = "ANY /service/{proxy+}"
+  route_key = "ANY /service-two/{proxy+}"
 
   target = "integrations/${aws_apigatewayv2_integration.service-two-integration.id}"
 }
