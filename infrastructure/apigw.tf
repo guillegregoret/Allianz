@@ -11,6 +11,7 @@ resource "aws_apigatewayv2_domain_name" "apigateway-domain-name" {
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
+  depends_on = [aws_acm_certificate_validation.cert_validation]
 }
 # Domain Mapping
 resource "aws_apigatewayv2_api_mapping" "api-mapping" {
