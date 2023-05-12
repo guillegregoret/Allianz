@@ -24,3 +24,4 @@ infrastructure/.terraform/providers/registry.terraform.io/hashicorp/time/0.9.1/w
 infrastructure/.terraform/modules/modules.json
 infrastructure/variables.tf
 infrastructure/.terraform/modules/modules.json
+infrastructure/terraform.tfvars

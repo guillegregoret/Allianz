@@ -4,18 +4,17 @@ resource "aws_lb" "public-load-balancer" {
   internal           = true # internal = true else false
   name               = "allianz-public-alb"
   load_balancer_type = "application"
-  #subnets            = module.vpc.public_subnets # Subnets públicas
-  subnets            = [module.vpc.private_subnets[0],module.vpc.private_subnets[1],module.vpc.private_subnets[2]] # Subnets privadas
+  subnets            = [module.vpc.private_subnets[0], module.vpc.private_subnets[1], module.vpc.private_subnets[2]] # Subnets privadas
   security_groups    = [aws_security_group.public.id]
 }
 
 ##### ALB - Target Groups #####
 
 resource "aws_alb_target_group" "service-one-public" {
-  name     = "service-one-tg"
-  port     = "8082"
-  protocol = "HTTP"
-  vpc_id   = module.vpc.vpc_id
+  name        = "service-one-tg"
+  port        = "8082"
+  protocol    = "HTTP"
+  vpc_id      = module.vpc.vpc_id
   target_type = "ip"
 
 
@@ -34,7 +33,6 @@ resource "aws_alb_target_group" "service-two-public" {
   port     = "8084"
   protocol = "HTTP"
   vpc_id   = module.vpc.vpc_id
-  #target_type = "ip"
 
 
   health_check {
@@ -49,8 +47,6 @@ resource "aws_alb_target_group" "service-two-public" {
 
 
 ##### ALB - Listeners #####
-
-
 resource "aws_lb_listener" "service-one-lb-listener" {
   load_balancer_arn = aws_lb.public-load-balancer.arn
   port              = "8082"

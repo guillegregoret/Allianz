@@ -9,8 +9,8 @@ resource "aws_mq_broker" "allianz-mq" {
   #security_groups    = [aws_security_group.test.id]
 
   user {
-    username = "allianz_user_mq"
-    password = "80EF9A1A04CED5D79F7D161A6039ACF14FA505EEE3EE728248710C674EDC1E13"
+    username = var.rabbit_user
+    password = var.rabbit_pass
   }
 }
 */

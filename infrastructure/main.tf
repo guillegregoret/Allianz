@@ -1,20 +1,3 @@
-/*
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-
-  }
-  backend "s3" {
-    bucket = "allianz-staging-terraform-state"
-    key    = "hm-staging-state"
-    region = "us-east-1"
-  }
-}
-*/
-
 terraform {
   required_version = ">= 1.0"
 
@@ -40,29 +23,15 @@ locals {
 ##
 
 provider "aws" {
-  region = "us-east-1"
+  region  = "us-east-1"
   profile = "acloudguru"
 }
 
 provider "aws" {
-  alias  = "acm_provider"
-  region = "us-east-1"
+  alias   = "acm_provider"
+  region  = "us-east-1"
   profile = "acloudguru"
 }
-
-## S3 state bucket - persiste el estado de terraform, es decir ata cada recurso declarado en codigo con su respectivo servicio creado en AWS
-/*
-resource "aws_s3_bucket" "tfstate" {
-  bucket = "allianz-dev-terraform-state"
-}
-resource "aws_s3_bucket_acl" "tfstate" {
-  bucket = aws_s3_bucket.tfstate.id
-  acl    = "private"
-}
-
-*/
-
-
 
 # VPC Config
 module "vpc" {
@@ -89,7 +58,6 @@ module "vpc" {
 
 #Elastic IP for NAT Gateway
 resource "aws_eip" "eip_nat" {
-  #instance = aws_instance.web.id
   vpc = true
 }
 
@@ -99,7 +67,7 @@ module "security_group_rds" {
   version = "~> 4"
 
   name        = local.name
-  description = "Complete PostgreSQL example security group"
+  description = "Complete PostgreSQL security group"
   vpc_id      = module.vpc.vpc_id
 
   # ingress

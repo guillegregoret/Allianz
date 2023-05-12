@@ -17,26 +17,26 @@ resource "aws_apigatewayv2_domain_name" "apigateway-domain-name" {
 resource "aws_apigatewayv2_api_mapping" "api-mapping" {
   api_id      = aws_apigatewayv2_api.apigateway.id
   domain_name = aws_apigatewayv2_domain_name.apigateway-domain-name.id
-  stage       = aws_apigatewayv2_stage.example.id
+  stage       = aws_apigatewayv2_stage.apigw-stage.id
 }
 
 # Service One API 
 resource "aws_apigatewayv2_integration" "service-one-integration" {
   api_id           = aws_apigatewayv2_api.apigateway.id
-  description      = "Example with a load balancer"
+  description      = "Service one integration with API Gateway"
   integration_type = "HTTP_PROXY"
   integration_uri  = aws_lb_listener.service-one-lb-listener.arn
 
   integration_method = "ANY"
   connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.example.id
+  connection_id      = aws_apigatewayv2_vpc_link.vpc-link.id
 
   tls_config {
     server_name_to_verify = "api.allianz.gregoret.com.ar"
   }
 
   request_parameters = {
-    "overwrite:path"                   = "$request.path.proxy"
+    "overwrite:path" = "$request.path.proxy"
   }
 }
 
@@ -50,20 +50,20 @@ resource "aws_apigatewayv2_route" "service-one-route" {
 # Service Two API 
 resource "aws_apigatewayv2_integration" "service-two-integration" {
   api_id           = aws_apigatewayv2_api.apigateway.id
-  description      = "Example with a load balancer"
+  description      = "Service two integration with API Gateway"
   integration_type = "HTTP_PROXY"
   integration_uri  = aws_lb_listener.service-two-lb-listener.arn
 
   integration_method = "ANY"
   connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.example.id
+  connection_id      = aws_apigatewayv2_vpc_link.vpc-link.id
 
   tls_config {
     server_name_to_verify = "api.allianz.gregoret.com.ar"
   }
 
-    request_parameters = {
-    "overwrite:path"                   = "$request.path.proxy"
+  request_parameters = {
+    "overwrite:path" = "$request.path.proxy"
   }
 }
 
@@ -75,14 +75,14 @@ resource "aws_apigatewayv2_route" "service-two-route" {
 }
 
 #General
-resource "aws_apigatewayv2_vpc_link" "example" {
-  name               = "example"
+resource "aws_apigatewayv2_vpc_link" "vpc-link" {
+  name               = "vpc-link"
   security_group_ids = [aws_security_group.public.id]
-  subnet_ids         = [module.vpc.private_subnets[0],module.vpc.private_subnets[1],module.vpc.private_subnets[2]]
+  subnet_ids         = [module.vpc.private_subnets[0], module.vpc.private_subnets[1], module.vpc.private_subnets[2]]
 }
 
-resource "aws_apigatewayv2_stage" "example" {
-  api_id = aws_apigatewayv2_api.apigateway.id
-  name   = "$default"
+resource "aws_apigatewayv2_stage" "apigw-stage" {
+  api_id      = aws_apigatewayv2_api.apigateway.id
+  name        = "$default"
   auto_deploy = true
 }

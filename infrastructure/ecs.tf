@@ -3,13 +3,7 @@ resource "aws_iam_role" "ecs-instance-role" {
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.ecs-instance-policy.json
 }
-/*
-resource "aws_iam_role" "ecsInstanceRole" {
-  name               = "ecsInstanceRole"
-  path               = "/"
-  assume_role_policy = data.aws_iam_policy_document.ecsInstanceRole-policy.json
-}
-*/
+
 data "aws_iam_policy_document" "ecs-instance-policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -170,10 +164,10 @@ data "template_file" "task_definition_service_two_json" {
     RDS_USER      = var.rds_username
     RDS_PASS      = var.rds_password
     LOGSTASH_HOST = aws_instance.logstash_instance.private_dns
-    LOGSTASH_PORT = "5001"
-    RABBIT_HOST = "b-a2d3c8ac-eebc-43d5-aa2b-9b917560c582.mq.us-east-1.amazonaws.com"
-    RABBIT_USER = "allianz_user_mq"
-    RABBIT_PASS = "80EF9A1A04CED5D79F7D161A6039ACF14FA505EEE3EE728248710C674EDC1E13"
+    LOGSTASH_PORT = var.logstash_port
+    RABBIT_HOST   = var.rabbit_host
+    RABBIT_USER   = var.rabbit_user
+    RABBIT_PASS   = var.rabbit_pass
   }
 
 }
@@ -208,7 +202,7 @@ resource "aws_ecs_service" "allianz-service-two-service" {
 ############################################################
 
 resource "aws_ecs_task_definition" "task_definition_service_one" {
-  container_definitions = data.template_file.task_definition_service_one_json.rendered # task definition json file location
+  container_definitions    = data.template_file.task_definition_service_one_json.rendered # task definition json file location
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
   family                   = "allianz-service-one" # task name
@@ -231,10 +225,10 @@ data "template_file" "task_definition_service_one_json" {
     MONGO_USER    = var.docdb_username
     MONGO_PASS    = var.docdb_password
     LOGSTASH_HOST = aws_instance.logstash_instance.private_dns
-    LOGSTASH_PORT = "5001"
-    RABBIT_HOST = "b-a2d3c8ac-eebc-43d5-aa2b-9b917560c582.mq.us-east-1.amazonaws.com"
-    RABBIT_USER = "allianz_user_mq"
-    RABBIT_PASS = "80EF9A1A04CED5D79F7D161A6039ACF14FA505EEE3EE728248710C674EDC1E13"
+    LOGSTASH_PORT = var.logstash_port
+    RABBIT_HOST   = var.rabbit_host
+    RABBIT_USER   = var.rabbit_user
+    RABBIT_PASS   = var.rabbit_pass
   }
 }
 
@@ -246,15 +240,15 @@ data "template_file" "task_definition_service_one_json" {
 resource "aws_ecs_service" "allianz-service-one-service" {
   cluster         = aws_ecs_cluster.cluster.id                              # ecs cluster id
   desired_count   = 1                                                       # no of task running
-  launch_type     = "FARGATE"                                                   # Cluster type ECS OR FARGATE
+  launch_type     = "FARGATE"                                               # Cluster type ECS OR FARGATE
   name            = "allianz-service-one-service"                           # Name of service
   task_definition = aws_ecs_task_definition.task_definition_service_one.arn # Attaching Task to service
 
- network_configuration {
-   security_groups  = [aws_security_group.sg-ec2-ecs.id]
-   subnets          = [module.vpc.private_subnets[0]]
-   assign_public_ip = false
- }
+  network_configuration {
+    security_groups  = [aws_security_group.sg-ec2-ecs.id]
+    subnets          = [module.vpc.private_subnets[0]]
+    assign_public_ip = false
+  }
 
   load_balancer {
     container_name   = "allianz-service-one" #"container_${var.component}_${var.environment}"
@@ -268,7 +262,7 @@ resource "aws_ecs_service" "allianz-service-one-service" {
 ### Fargate
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "service-one-ecsTaskExecutionRole"
- 
+
   assume_role_policy = <<EOF
 {
  "Version": "2012-10-17",
@@ -285,14 +279,14 @@ resource "aws_iam_role" "ecs_task_execution_role" {
 }
 EOF
 }
- 
+
 resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attachment" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 resource "aws_iam_role" "ecs_task_role" {
   name = "service-one-ecsTaskRole"
- 
+
   assume_role_policy = <<EOF
 {
  "Version": "2012-10-17",
@@ -309,12 +303,12 @@ resource "aws_iam_role" "ecs_task_role" {
 }
 EOF
 }
- 
+
 resource "aws_iam_policy" "dynamodb" {
   name        = "service-one-task-policy-dynamodb"
   description = "Policy that allows access to DynamoDB"
- 
- policy = <<EOF
+
+  policy = <<EOF
 {
    "Version": "2012-10-17",
    "Statement": [
@@ -339,7 +333,7 @@ resource "aws_iam_policy" "dynamodb" {
 }
 EOF
 }
- 
+
 resource "aws_iam_role_policy_attachment" "ecs-task-role-policy-attachment" {
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = aws_iam_policy.dynamodb.arn
@@ -351,7 +345,7 @@ resource "time_sleep" "wait_120_seconds" {
   create_duration = "120s"
 }
 
-# This resource will create (at least) 30 seconds after null_resource.previous
+# This resource will create (at least) 120 seconds after null_resource.previous
 resource "null_resource" "next" {
   depends_on = [time_sleep.wait_120_seconds]
 }

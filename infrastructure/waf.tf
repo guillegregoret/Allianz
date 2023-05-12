@@ -3,23 +3,6 @@ resource "aws_wafv2_web_acl_association" "waf_alb" {
   web_acl_arn  = aws_wafv2_web_acl.external.arn
 }
 
-resource "aws_wafv2_regex_pattern_set" "common" {
-  name  = "Common"
-  scope = "REGIONAL"
-
-  regular_expression {
-    regex_string = "^.*(some-url).*((.edp-epam)+)\\.com$"
-  }
-
-  #  Add here additional regular expressions for other endpoints, they are merging with OR operator, e.g.
-
-  /*
-   regular_expression {
-      regex_string = "^.*(jenkins).*((.edp-epam)+)\\.com$"
-   }
-   */
-}
-
 resource "aws_wafv2_web_acl" "external" {
   name  = "ExternalACL"
   scope = "REGIONAL"
@@ -94,7 +77,7 @@ resource "aws_wafv2_web_acl" "external" {
     }
   }
 
-    rule {
+  rule {
     name     = "AWS-AWSManagedRulesAmazonIpReputationList"
     priority = 4
 
@@ -116,7 +99,7 @@ resource "aws_wafv2_web_acl" "external" {
     }
   }
 
-    rule {
+  rule {
     name     = "AWS-AWSManagedRulesAnonymousIpList"
     priority = 5
 
