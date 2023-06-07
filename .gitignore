@@ -22,6 +22,5 @@ infrastructure/.terraform/providers/registry.terraform.io/hashicorp/null/3.2.1/w
 infrastructure/.terraform/providers/registry.terraform.io/hashicorp/template/2.2.0/windows_amd64/terraform-provider-template_v2.2.0_x4.exe
 infrastructure/.terraform/providers/registry.terraform.io/hashicorp/time/0.9.1/windows_amd64/terraform-provider-time_v0.9.1_x5.exe
 infrastructure/.terraform/modules/modules.json
-infrastructure/variables.tf
 infrastructure/.terraform/modules/modules.json
 infrastructure/terraform.tfvars
