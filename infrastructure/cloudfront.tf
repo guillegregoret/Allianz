@@ -16,7 +16,7 @@ resource "aws_cloudfront_distribution" "root_s3_distribution" {
 
   enabled         = true
   is_ipv6_enabled = true
-
+  default_root_object = "index.html"
   aliases = [var.domain_name]
 
   custom_error_response {

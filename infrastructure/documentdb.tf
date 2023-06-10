@@ -40,7 +40,7 @@ resource "aws_docdb_cluster" "docdb_cluster" {
 }
 
 resource "aws_docdb_cluster_parameter_group" "docdb-paramgroup-allianz" {
-  family      = "docdb4.0"
+  family      = "docdb5.0"
   name        = "docdb-paramgroup-allianz"
   description = "docdb cluster parameter group"
 

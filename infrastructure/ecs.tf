@@ -340,7 +340,7 @@ resource "aws_iam_role_policy_attachment" "ecs-task-role-policy-attachment" {
 }
 
 resource "time_sleep" "wait_120_seconds" {
-  depends_on = [aws_db_instance.allianz_mysql, aws_docdb_cluster.docdb_cluster]
+  depends_on = [aws_db_instance.allianz_mysql, aws_docdb_cluster.docdb_cluster, aws_docdb_cluster_instance.cluster_instances]
 
   create_duration = "120s"
 }
@@ -348,4 +348,10 @@ resource "time_sleep" "wait_120_seconds" {
 # This resource will create (at least) 120 seconds after null_resource.previous
 resource "null_resource" "next" {
   depends_on = [time_sleep.wait_120_seconds]
+}
+
+resource "time_sleep" "wait_120_seconds_services" {
+  depends_on = [aws_ecs_service.allianz-service-one-service, aws_ecs_service.allianz-service-two-service]
+
+  create_duration = "240s"
 }

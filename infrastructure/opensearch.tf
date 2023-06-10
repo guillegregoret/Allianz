@@ -1,3 +1,4 @@
+/*
 resource "aws_opensearch_domain" "allianz_opensearch" {
   domain_name    = "opensearch-allianz"
   engine_version = "OpenSearch_2.3"
@@ -31,3 +32,4 @@ resource "aws_opensearch_domain" "allianz_opensearch" {
   }
 
 }
+*/
