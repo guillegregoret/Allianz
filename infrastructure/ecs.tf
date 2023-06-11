@@ -111,7 +111,7 @@ resource "aws_ecs_cluster" "cluster" {
 resource "aws_instance" "ec2_instance" {
   ami                    = "ami-02861932a7d48032d"
   subnet_id              = module.vpc.private_subnets[0]
-  instance_type          = "t3a.medium"
+  instance_type          = "t3a.small"
   iam_instance_profile   = aws_iam_instance_profile.ecs_agent.name
   vpc_security_group_ids = [aws_security_group.sg-ec2-ecs.id]
   ebs_optimized          = "false"
