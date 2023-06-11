@@ -1,7 +1,7 @@
 resource "aws_apigatewayv2_api" "apigateway" {
   name          = "allianz-api-gateway"
   protocol_type = "HTTP"
-  depends_on = [time_sleep.wait_120_seconds_services]
+  depends_on    = [time_sleep.wait_120_seconds_services]
 }
 # Ownership of domain name
 resource "aws_apigatewayv2_domain_name" "apigateway-domain-name" {
