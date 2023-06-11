@@ -29,4 +29,11 @@ resource "aws_route53_record" "root_domain" {
   }
 }
 
-
+resource "aws_route53_record" "certificate_validation_record" {
+  allow_overwrite = true
+  name            = tolist(aws_acm_certificate.ssl_certificate.domain_validation_options)[0].resource_record_name
+  records         = [tolist(aws_acm_certificate.ssl_certificate.domain_validation_options)[0].resource_record_value]
+  type            = tolist(aws_acm_certificate.ssl_certificate.domain_validation_options)[0].resource_record_type
+  zone_id         = aws_route53_zone.main.zone_id
+  ttl             = 60
+}
