@@ -1,7 +1,7 @@
 [
     {
-        "name": "allianz-service-two",
-        "image": "guillegregoret/allianz-servicetwo:latest", 
+        "name": "service-two",
+        "image": "${IMAGE}", 
         "cpu": 1024,
         "memory": 1024,
         "environment": [
@@ -21,7 +21,7 @@
         "logConfiguration": {
           "logDriver": "awslogs",
           "options": {
-            "awslogs-group": "allianz-service-two",
+            "awslogs-group": "service-two",
             "awslogs-create-group": "true",
             "awslogs-region": "us-east-1",
             "awslogs-stream-prefix": "ecs"

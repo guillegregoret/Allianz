@@ -2,7 +2,7 @@
 ### ALB Público ###
 resource "aws_lb" "public-load-balancer" {
   internal           = true # internal = true else false
-  name               = "allianz-public-alb"
+  name               = "${var.project_name}-public-alb"
   load_balancer_type = "application"
   subnets            = [module.vpc.private_subnets[0], module.vpc.private_subnets[1], module.vpc.private_subnets[2]] # Subnets privadas
   security_groups    = [aws_security_group.public.id]

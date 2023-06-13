@@ -4,8 +4,8 @@
 
 resource "aws_s3_bucket" "root_bucket" {
 
-  bucket = var.bucket_name
-  #policy = templatefile("templates/s3-policy.json", { bucket = var.bucket_name })
+  bucket = "${var.bucket_name}-${random_string.random_suffix.result}"
+  #policy = templatefile("templates/s3-policy.json", { bucket = "${var.bucket_name}-${random_string.random_suffix.result}" })
   cors_rule {
     allowed_headers = ["Authorization", "Content-Length"]
     allowed_methods = ["GET", "POST"]
@@ -13,9 +13,20 @@ resource "aws_s3_bucket" "root_bucket" {
     max_age_seconds = 3000
   }
 
-  website {
-    index_document = "index.html"
-    error_document = "404.html"
+  #website {
+  #  index_document = "index.html"
+  #  error_document = "404.html"
+  #}
+}
+resource "aws_s3_bucket_website_configuration" "root_bucket" {
+  bucket = aws_s3_bucket.root_bucket.id
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "404.html"
   }
 }
 
@@ -43,4 +54,28 @@ resource "aws_s3_bucket_acl" "bucket-acl" {
 
   bucket = aws_s3_bucket.root_bucket.id
   acl    = "public-read"
+}
+
+resource "aws_s3_bucket_policy" "public_read_access" {
+  bucket = aws_s3_bucket.root_bucket.id
+policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "PublicReadGetObject",
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::${var.bucket_name}-${random_string.random_suffix.result}/*"
+      }
+    ]
+  }
+EOF
+}
+
+resource "random_string" "random_suffix" {
+  length  = 8
+  special = false
+  upper   = false
 }

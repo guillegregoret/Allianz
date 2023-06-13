@@ -1,11 +1,11 @@
 resource "aws_apigatewayv2_api" "apigateway" {
-  name          = "allianz-api-gateway"
+  name          = "${var.project_name}-api-gateway"
   protocol_type = "HTTP"
   depends_on    = [time_sleep.wait_120_seconds_services]
 }
 # Ownership of domain name
 resource "aws_apigatewayv2_domain_name" "apigateway-domain-name" {
-  domain_name = "api.allianz.gregoret.com.ar"
+  domain_name = "api.${var.project_name}.gregoret.com.ar"
 
   domain_name_configuration {
     certificate_arn = aws_acm_certificate.ssl_certificate.arn
@@ -33,7 +33,7 @@ resource "aws_apigatewayv2_integration" "service-one-integration" {
   connection_id      = aws_apigatewayv2_vpc_link.vpc-link.id
 
   tls_config {
-    server_name_to_verify = "api.allianz.gregoret.com.ar"
+    server_name_to_verify = "api.${var.project_name}.gregoret.com.ar"
   }
 
   request_parameters = {
@@ -60,7 +60,7 @@ resource "aws_apigatewayv2_integration" "service-two-integration" {
   connection_id      = aws_apigatewayv2_vpc_link.vpc-link.id
 
   tls_config {
-    server_name_to_verify = "api.allianz.gregoret.com.ar"
+    server_name_to_verify = "api.${var.project_name}.gregoret.com.ar"
   }
 
   request_parameters = {

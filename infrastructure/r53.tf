@@ -37,3 +37,37 @@ resource "aws_route53_record" "certificate_validation_record" {
   zone_id         = aws_route53_zone.main.zone_id
   ttl             = 60
 }
+
+##### CloudFlare
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
+}
+resource "cloudflare_record" "NS0" {
+  zone_id = var.cloudflare_zone_id
+  name    = var.project_name
+  value   = aws_route53_zone.main.name_servers.0
+  type    = "NS"
+  ttl     = 600
+}
+resource "cloudflare_record" "NS1" {
+  zone_id = var.cloudflare_zone_id
+  name    = var.project_name
+  value   = aws_route53_zone.main.name_servers.1
+  type    = "NS"
+  ttl     = 600
+}
+resource "cloudflare_record" "NS2" {
+  zone_id = var.cloudflare_zone_id
+  name    = var.project_name
+  value   = aws_route53_zone.main.name_servers.2
+  type    = "NS"
+  ttl     = 600
+}
+resource "cloudflare_record" "NS3" {
+  zone_id = var.cloudflare_zone_id
+  name    = var.project_name
+  value   = aws_route53_zone.main.name_servers.3
+  type    = "NS"
+  ttl     = 600
+}

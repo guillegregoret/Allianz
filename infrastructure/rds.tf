@@ -22,7 +22,7 @@ resource "aws_security_group_rule" "mysql_inbound_access" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
-resource "aws_db_instance" "allianz_mysql" {
+resource "aws_db_instance" "mysql" {
   allocated_storage           = 20
   storage_type                = "gp3"
   engine                      = "mysql"

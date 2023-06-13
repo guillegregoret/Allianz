@@ -1,7 +1,7 @@
 [
     {
-        "name": "allianz-service-one",
-        "image": "guillegregoret/allianz-serviceone:latest", 
+        "name": "service-one",
+        "image": "${IMAGE}", 
         "cpu": 512,
         "memory": 1024,
         "networkMode": "awsvpc",
@@ -22,7 +22,7 @@
         "logConfiguration": {
           "logDriver": "awslogs",
           "options": {
-            "awslogs-group": "allianz-service-one",
+            "awslogs-group": "service-one",
             "awslogs-create-group": "true",
             "awslogs-region": "us-east-1",
             "awslogs-stream-prefix": "ecs"
