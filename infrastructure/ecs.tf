@@ -54,7 +54,6 @@ data "aws_iam_policy_document" "ecs-service-policy" {
   }
 }
 
-####################
 data "aws_iam_policy_document" "ecs_agent" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -96,18 +95,13 @@ resource "aws_iam_instance_profile" "ecs_agent" {
   name = "ecs-agent"
   role = aws_iam_role.ecs_agent.name
 }
-####################
-#########################################################
-# AWS ECS-CLUSTER
-#########################################################
 
+##### ECS-Cluster #####
 resource "aws_ecs_cluster" "cluster" {
   name = var.ecs_cluster_name
 }
 
-###########################################################
-# AWS ECS-EC2
-###########################################################
+##### ECS-EC2 Instance #####
 resource "aws_instance" "ec2_instance" {
   ami                    = "ami-02861932a7d48032d"
   subnet_id              = module.vpc.private_subnets[0]
@@ -136,13 +130,8 @@ data "template_file" "user_data" {
   }
 }
 
-############################################################
-# ECS - Service Two                                        #
-############################################################
-
-############################################################
-# AWS ECS-TASK
-############################################################
+##### ECS - Service Two #####                                       
+##### ECS Task Definition #####
 
 resource "aws_ecs_task_definition" "task_definition_service_two" {
   container_definitions = data.template_file.task_definition_service_two_json.rendered # task definition json file location
@@ -177,10 +166,8 @@ data "template_file" "task_definition_service_two_json" {
 
 }
 
+##### ECS Service #####
 
-##############################################################
-# AWS ECS-SERVICE
-##############################################################
 
 resource "aws_ecs_service" "service-two-service" {
   cluster         = aws_ecs_cluster.cluster.id                              # ecs cluster id
@@ -198,13 +185,8 @@ resource "aws_ecs_service" "service-two-service" {
   depends_on = [aws_security_group.sg-ec2-ecs, time_sleep.wait_120_seconds]
 }
 
-############################################################
-# ECS - Service One                                        #
-############################################################
-
-############################################################
-# AWS ECS-TASK
-############################################################
+##### ECS - Service One #####                                      
+##### ECS Task Definition #####
 
 resource "aws_ecs_task_definition" "task_definition_service_one" {
   container_definitions    = data.template_file.task_definition_service_one_json.rendered # task definition json file location
@@ -239,11 +221,7 @@ data "template_file" "task_definition_service_one_json" {
   }
 }
 
-
-##############################################################
-# AWS ECS-SERVICE
-##############################################################
-
+##### ECS Service #####
 resource "aws_ecs_service" "service-one-service" {
   cluster         = aws_ecs_cluster.cluster.id                              # ecs cluster id
   desired_count   = 1                                                       # no of task running
@@ -266,7 +244,7 @@ resource "aws_ecs_service" "service-one-service" {
 }
 
 
-### Fargate
+##### IAM Role for Fargate #####
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "service-one-ecsTaskExecutionRole"
 

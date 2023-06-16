@@ -1,6 +1,4 @@
-
-################################################################################################
-# Cloudfront distribution for main s3 site.
+# Cloudfront - Frontend
 
 resource "aws_cloudfront_distribution" "root_s3_distribution" {
   origin {
