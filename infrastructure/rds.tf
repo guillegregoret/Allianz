@@ -27,7 +27,7 @@ resource "aws_db_instance" "mysql" {
   storage_type                = "gp3"
   engine                      = "mysql"
   engine_version              = "8.0.28"
-  instance_class              = "db.t3.small"
+  instance_class              = "db.t3.medium"
   identifier                  = var.rds_db_name
   db_name                     = var.rds_db_name
   username                    = var.rds_username
@@ -42,4 +42,9 @@ resource "aws_db_instance" "mysql" {
   maintenance_window          = "Sat:00:00-Sat:03:00"
   multi_az                    = false
   skip_final_snapshot         = true
+  apply_immediately           = true
+
+  blue_green_update {
+    enabled = true
+  }
 }

@@ -57,8 +57,8 @@ resource "aws_s3_bucket_acl" "bucket-acl" {
 }
 
 resource "aws_s3_bucket_policy" "public_read_access" {
-  bucket = aws_s3_bucket.root_bucket.id
-policy = <<EOF
+  bucket     = aws_s3_bucket.root_bucket.id
+  policy     = <<EOF
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -72,6 +72,7 @@ policy = <<EOF
     ]
   }
 EOF
+  depends_on = [aws_s3_bucket.root_bucket]
 }
 
 resource "random_string" "random_suffix" {
