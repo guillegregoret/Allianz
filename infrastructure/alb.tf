@@ -1,5 +1,5 @@
 ##### ALB - Application Load Balancing #####
-### ALB Público ###
+### ALB Public ###
 resource "aws_lb" "public-load-balancer" {
   internal           = true # internal = true else false
   name               = "${var.project_name}-public-alb"

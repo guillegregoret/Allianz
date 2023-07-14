@@ -1,8 +1,8 @@
-
+# Template
 data "template_file" "user_data_consul" {
   template = file("user_data_consul.tpl")
 }
-
+# EC2 Instance - Consul
 resource "aws_instance" "consul_instance" {
   ami                    = "ami-04fba13aa6da74c92"
   subnet_id              = module.vpc.private_subnets[0]

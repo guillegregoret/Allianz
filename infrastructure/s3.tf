@@ -1,6 +1,5 @@
 
-## S3 Bucket for static frontend
-# S3 bucket for website.
+# S3 Bucket for static frontend
 
 resource "aws_s3_bucket" "root_bucket" {
 
@@ -12,11 +11,6 @@ resource "aws_s3_bucket" "root_bucket" {
     allowed_origins = ["https://${var.domain_name}"]
     max_age_seconds = 3000
   }
-
-  #website {
-  #  index_document = "index.html"
-  #  error_document = "404.html"
-  #}
 }
 resource "aws_s3_bucket_website_configuration" "root_bucket" {
   bucket = aws_s3_bucket.root_bucket.id

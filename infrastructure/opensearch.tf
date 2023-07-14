@@ -1,5 +1,6 @@
-/*
-resource "aws_opensearch_domain" "${var.project_name}_opensearch" {
+
+# OpenSeach Service
+resource "aws_opensearch_domain" "allianz_opensearch" {
   domain_name    = "opensearch-${var.project_name}"
   engine_version = "OpenSearch_2.3"
 
@@ -32,4 +33,3 @@ resource "aws_opensearch_domain" "${var.project_name}_opensearch" {
   }
 
 }
-*/

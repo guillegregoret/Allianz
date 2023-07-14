@@ -1,3 +1,4 @@
+# IAM Roles and Policies
 resource "aws_iam_role" "ecs-instance-role" {
   name               = "ecs-instance-role"
   path               = "/"
@@ -101,7 +102,7 @@ resource "aws_ecs_cluster" "cluster" {
   name = var.ecs_cluster_name
 }
 
-##### ECS-EC2 Instance #####
+##### ECS Cluster - EC2 Instance #####
 resource "aws_instance" "ec2_instance" {
   ami                    = "ami-02861932a7d48032d"
   subnet_id              = module.vpc.private_subnets[0]
@@ -134,15 +135,13 @@ data "template_file" "user_data" {
 ##### ECS Task Definition #####
 
 resource "aws_ecs_task_definition" "task_definition_service_two" {
-  container_definitions = data.template_file.task_definition_service_two_json.rendered # task definition json file location
-  #execution_role_arn       = aws_iam_instance_profile.ecsTaskExecutionRole.arn
-  family                   = "service-two" # task name
-  network_mode             = "bridge"      # network mode awsvpc, brigde
+  container_definitions    = data.template_file.task_definition_service_two_json.rendered # task definition json file location
+  family                   = "service-two"                                                # task name
+  network_mode             = "bridge"                                                     # network mode awsvpc, brigde
   memory                   = "1024"
   cpu                      = "1024"
   requires_compatibilities = ["EC2"] # Fargate or EC2
-  #task_role_arn            = aws_iam_instance_profile.ecsTaskExecutionRole.arn
-  depends_on = [aws_db_instance.mysql, aws_instance.consul_instance, aws_instance.logstash_instance]
+  depends_on               = [aws_db_instance.mysql, aws_instance.consul_instance, aws_instance.logstash_instance]
 }
 
 data "template_file" "task_definition_service_two_json" {
@@ -178,7 +177,7 @@ resource "aws_ecs_service" "service-two-service" {
 
 
   load_balancer {
-    container_name   = "service-two" #"container_${var.component}_${var.environment}"
+    container_name   = "service-two"
     container_port   = "8084"
     target_group_arn = aws_alb_target_group.service-two-public.arn # attaching load_balancer target group to ecs
   }
@@ -199,6 +198,7 @@ resource "aws_ecs_task_definition" "task_definition_service_one" {
   requires_compatibilities = ["FARGATE"] # Fargate or EC2
 
   depends_on = [aws_db_instance.mysql, aws_instance.consul_instance, aws_instance.logstash_instance, aws_docdb_cluster_instance.cluster_instances]
+
 }
 
 data "template_file" "task_definition_service_one_json" {
@@ -236,7 +236,7 @@ resource "aws_ecs_service" "service-one-service" {
   }
 
   load_balancer {
-    container_name   = "service-one" #"container_${var.component}_${var.environment}"
+    container_name   = "service-one"
     container_port   = "8082"
     target_group_arn = aws_alb_target_group.service-one-public.arn # attaching load_balancer target group to ecs
   }
@@ -330,7 +330,6 @@ resource "time_sleep" "wait_120_seconds" {
   create_duration = "120s"
 }
 
-# This resource will create (at least) 120 seconds after null_resource.previous
 resource "null_resource" "next" {
   depends_on = [time_sleep.wait_120_seconds]
 }
