@@ -1,7 +1,7 @@
 resource "aws_apigatewayv2_api" "apigateway" {
   name          = "${var.project_name}-api-gateway"
   protocol_type = "HTTP"
-  #depends_on    = [time_sleep.wait_120_seconds_services]
+  depends_on    = [time_sleep.wait_60_seconds_services]
 }
 # Ownership of domain name
 resource "aws_apigatewayv2_domain_name" "apigateway-domain-name" {
@@ -27,7 +27,7 @@ resource "aws_apigatewayv2_integration" "service-one-integration" {
   description        = "Service one integration with API Gateway"
   integration_type   = "HTTP_PROXY"
   integration_uri    = aws_lb_listener.service-one-lb-listener.arn
-  integration_method = "ANY"
+  integration_method = "GET"
   connection_type    = "VPC_LINK"
   connection_id      = aws_apigatewayv2_vpc_link.vpc-link.id
 
@@ -42,7 +42,7 @@ resource "aws_apigatewayv2_integration" "service-one-integration" {
 
 resource "aws_apigatewayv2_route" "service-one-route" {
   api_id    = aws_apigatewayv2_api.apigateway.id
-  route_key = "ANY /service-one/{proxy+}"
+  route_key = "GET /service-one/{proxy+}"
 
   target = "integrations/${aws_apigatewayv2_integration.service-one-integration.id}"
   lifecycle {
@@ -61,7 +61,7 @@ resource "aws_apigatewayv2_integration" "service-two-integration" {
   integration_type = "HTTP_PROXY"
   integration_uri  = aws_lb_listener.service-two-lb-listener.arn
 
-  integration_method = "ANY"
+  integration_method = "GET"
   connection_type    = "VPC_LINK"
   connection_id      = aws_apigatewayv2_vpc_link.vpc-link.id
 
@@ -76,7 +76,7 @@ resource "aws_apigatewayv2_integration" "service-two-integration" {
 
 resource "aws_apigatewayv2_route" "service-two-route" {
   api_id    = aws_apigatewayv2_api.apigateway.id
-  route_key = "ANY /service-two/{proxy+}"
+  route_key = "GET /service-two/{proxy+}"
 
   target = "integrations/${aws_apigatewayv2_integration.service-two-integration.id}"
   lifecycle {
@@ -116,7 +116,7 @@ resource "aws_apigatewayv2_deployment" "apigw" {
   lifecycle {
     create_before_destroy = true
   }
-  depends_on    = [aws_apigatewayv2_route.service-one-route, aws_apigatewayv2_route.service-two-route]
+  depends_on = [aws_apigatewayv2_route.service-one-route, aws_apigatewayv2_route.service-two-route]
 }
 
 resource "null_resource" "update_routes" {
@@ -129,5 +129,5 @@ resource "null_resource" "update_routes" {
   provisioner "local-exec" {
     command = "aws apigatewayv2 create-deployment --profile acloudguru --api-id ${aws_apigatewayv2_api.apigateway.id} --stage ${var.environment}"
   }
-    depends_on    = [aws_apigatewayv2_deployment.apigw]
+  depends_on = [aws_apigatewayv2_deployment.apigw]
 }

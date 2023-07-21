@@ -334,8 +334,8 @@ resource "null_resource" "next" {
   depends_on = [time_sleep.wait_120_seconds]
 }
 
-resource "time_sleep" "wait_120_seconds_services" {
+resource "time_sleep" "wait_60_seconds_services" {
   depends_on = [aws_ecs_service.service-one-service, aws_ecs_service.service-two-service]
 
-  create_duration = "240s"
+  create_duration = "60s"
 }

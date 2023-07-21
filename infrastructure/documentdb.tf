@@ -18,8 +18,8 @@ resource "aws_security_group_rule" "docdb_inbound_access" {
 resource "aws_docdb_cluster_instance" "cluster_instances" {
   identifier         = "docdb-cluster-${var.project_name}"
   cluster_identifier = aws_docdb_cluster.docdb_cluster.id
-  instance_class     = "db.t3.medium"
-
+  instance_class     = "db.t4g.medium"
+  apply_immediately               = true
   lifecycle {
     ignore_changes = [identifier]
   }
@@ -35,6 +35,7 @@ resource "aws_docdb_cluster" "docdb_cluster" {
   vpc_security_group_ids          = ["${aws_security_group.docdb-sg.id}"]
   db_subnet_group_name            = aws_docdb_subnet_group.docdb_subnetgroup.name
   skip_final_snapshot             = true
+  apply_immediately               = true
   lifecycle {
     ignore_changes = [availability_zones]
   }
