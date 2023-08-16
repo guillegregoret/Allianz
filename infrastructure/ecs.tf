@@ -1,3 +1,4 @@
+# IAM Roles and Policies
 resource "aws_iam_role" "ecs-instance-role" {
   name               = "ecs-instance-role"
   path               = "/"
@@ -54,7 +55,6 @@ data "aws_iam_policy_document" "ecs-service-policy" {
   }
 }
 
-####################
 data "aws_iam_policy_document" "ecs_agent" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -96,18 +96,13 @@ resource "aws_iam_instance_profile" "ecs_agent" {
   name = "ecs-agent"
   role = aws_iam_role.ecs_agent.name
 }
-####################
-#########################################################
-# AWS ECS-CLUSTER
-#########################################################
 
+##### ECS-Cluster #####
 resource "aws_ecs_cluster" "cluster" {
-  name = "ecs-allianz-cluster"
+  name = var.ecs_cluster_name
 }
 
-###########################################################
-# AWS ECS-EC2
-###########################################################
+##### ECS Cluster - EC2 Instance #####
 resource "aws_instance" "ec2_instance" {
   ami                    = "ami-02861932a7d48032d"
   subnet_id              = module.vpc.private_subnets[0]
@@ -131,26 +126,22 @@ resource "aws_instance" "ec2_instance" {
 
 data "template_file" "user_data" {
   template = file("user_data.tpl")
+  vars = {
+    ECS_CLUSTER_NAME = var.ecs_cluster_name
+  }
 }
 
-############################################################
-# ECS - Service Two                                        #
-############################################################
-
-############################################################
-# AWS ECS-TASK
-############################################################
+##### ECS - Service Two #####                                       
+##### ECS Task Definition #####
 
 resource "aws_ecs_task_definition" "task_definition_service_two" {
-  container_definitions = data.template_file.task_definition_service_two_json.rendered # task definition json file location
-  #execution_role_arn       = aws_iam_instance_profile.ecsTaskExecutionRole.arn
-  family                   = "allianz-service-two" # task name
-  network_mode             = "bridge"              # network mode awsvpc, brigde
+  container_definitions    = data.template_file.task_definition_service_two_json.rendered # task definition json file location
+  family                   = "service-two"                                                # task name
+  network_mode             = "bridge"                                                     # network mode awsvpc, brigde
   memory                   = "1024"
   cpu                      = "1024"
   requires_compatibilities = ["EC2"] # Fargate or EC2
-  #task_role_arn            = aws_iam_instance_profile.ecsTaskExecutionRole.arn
-  depends_on = [aws_db_instance.allianz_mysql, aws_instance.consul_instance, aws_instance.logstash_instance]
+  depends_on               = [aws_db_instance.mysql, aws_instance.consul_instance, aws_instance.logstash_instance]
 }
 
 data "template_file" "task_definition_service_two_json" {
@@ -159,7 +150,7 @@ data "template_file" "task_definition_service_two_json" {
   vars = {
     CONSUL_HOST   = aws_instance.consul_instance.private_dns
     CONSUL_PORT   = var.consul_port
-    RDS_HOST      = aws_db_instance.allianz_mysql.endpoint
+    RDS_HOST      = aws_db_instance.mysql.endpoint
     RDS_DB        = var.rds_db_name
     RDS_USER      = var.rds_username
     RDS_PASS      = var.rds_password
@@ -168,50 +159,46 @@ data "template_file" "task_definition_service_two_json" {
     RABBIT_HOST   = var.rabbit_host
     RABBIT_USER   = var.rabbit_user
     RABBIT_PASS   = var.rabbit_pass
+    PROJECT_NAME  = var.project_name
+    IMAGE         = var.service_two_docker_image
   }
 
 }
 
+##### ECS Service #####
 
-##############################################################
-# AWS ECS-SERVICE
-##############################################################
 
-resource "aws_ecs_service" "allianz-service-two-service" {
+resource "aws_ecs_service" "service-two-service" {
   cluster         = aws_ecs_cluster.cluster.id                              # ecs cluster id
   desired_count   = 1                                                       # no of task running
   launch_type     = "EC2"                                                   # Cluster type ECS OR FARGATE
-  name            = "allianz-service-two-service"                           # Name of service
+  name            = "service-two-service"                                   # Name of service
   task_definition = aws_ecs_task_definition.task_definition_service_two.arn # Attaching Task to service
 
 
   load_balancer {
-    container_name   = "allianz-service-two" #"container_${var.component}_${var.environment}"
+    container_name   = "service-two"
     container_port   = "8084"
     target_group_arn = aws_alb_target_group.service-two-public.arn # attaching load_balancer target group to ecs
   }
   depends_on = [aws_security_group.sg-ec2-ecs, time_sleep.wait_120_seconds]
 }
 
-############################################################
-# ECS - Service One                                        #
-############################################################
-
-############################################################
-# AWS ECS-TASK
-############################################################
+##### ECS - Service One #####                                      
+##### ECS Task Definition #####
 
 resource "aws_ecs_task_definition" "task_definition_service_one" {
   container_definitions    = data.template_file.task_definition_service_one_json.rendered # task definition json file location
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
-  family                   = "allianz-service-one" # task name
-  network_mode             = "awsvpc"              # network mode awsvpc, brigde
+  family                   = "service-one" # task name
+  network_mode             = "awsvpc"      # network mode awsvpc, brigde
   memory                   = "1024"
   cpu                      = "512"
   requires_compatibilities = ["FARGATE"] # Fargate or EC2
 
-  depends_on = [aws_db_instance.allianz_mysql, aws_instance.consul_instance, aws_instance.logstash_instance, aws_docdb_cluster_instance.cluster_instances]
+  depends_on = [aws_db_instance.mysql, aws_instance.consul_instance, aws_instance.logstash_instance, aws_docdb_cluster_instance.cluster_instances]
+
 }
 
 data "template_file" "task_definition_service_one_json" {
@@ -229,19 +216,17 @@ data "template_file" "task_definition_service_one_json" {
     RABBIT_HOST   = var.rabbit_host
     RABBIT_USER   = var.rabbit_user
     RABBIT_PASS   = var.rabbit_pass
+    PROJECT_NAME  = var.project_name
+    IMAGE         = var.service_one_docker_image
   }
 }
 
-
-##############################################################
-# AWS ECS-SERVICE
-##############################################################
-
-resource "aws_ecs_service" "allianz-service-one-service" {
+##### ECS Service #####
+resource "aws_ecs_service" "service-one-service" {
   cluster         = aws_ecs_cluster.cluster.id                              # ecs cluster id
   desired_count   = 1                                                       # no of task running
   launch_type     = "FARGATE"                                               # Cluster type ECS OR FARGATE
-  name            = "allianz-service-one-service"                           # Name of service
+  name            = "service-one-service"                                   # Name of service
   task_definition = aws_ecs_task_definition.task_definition_service_one.arn # Attaching Task to service
 
   network_configuration {
@@ -251,7 +236,7 @@ resource "aws_ecs_service" "allianz-service-one-service" {
   }
 
   load_balancer {
-    container_name   = "allianz-service-one" #"container_${var.component}_${var.environment}"
+    container_name   = "service-one"
     container_port   = "8082"
     target_group_arn = aws_alb_target_group.service-one-public.arn # attaching load_balancer target group to ecs
   }
@@ -259,7 +244,7 @@ resource "aws_ecs_service" "allianz-service-one-service" {
 }
 
 
-### Fargate
+##### IAM Role for Fargate #####
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "service-one-ecsTaskExecutionRole"
 
@@ -340,18 +325,17 @@ resource "aws_iam_role_policy_attachment" "ecs-task-role-policy-attachment" {
 }
 
 resource "time_sleep" "wait_120_seconds" {
-  depends_on = [aws_db_instance.allianz_mysql, aws_docdb_cluster.docdb_cluster, aws_docdb_cluster_instance.cluster_instances]
+  depends_on = [aws_db_instance.mysql, aws_docdb_cluster.docdb_cluster, aws_docdb_cluster_instance.cluster_instances]
 
   create_duration = "120s"
 }
 
-# This resource will create (at least) 120 seconds after null_resource.previous
 resource "null_resource" "next" {
   depends_on = [time_sleep.wait_120_seconds]
 }
 
-resource "time_sleep" "wait_120_seconds_services" {
-  depends_on = [aws_ecs_service.allianz-service-one-service, aws_ecs_service.allianz-service-two-service]
+resource "time_sleep" "wait_60_seconds_services" {
+  depends_on = [aws_ecs_service.service-one-service, aws_ecs_service.service-two-service]
 
-  create_duration = "240s"
+  create_duration = "60s"
 }

@@ -1,8 +1,13 @@
-
+# Template
 data "template_file" "user_data_logstash" {
   template = file("user_data_logstash.tpl")
+  vars = {
+    OS_USER   = var.opensearch_user
+    OS_PASSWD = var.opensearch_password
+    OS_URL    = var.opensearch_url
+  }
 }
-
+# EC2 Instance - Logstash
 resource "aws_instance" "logstash_instance" {
   ami                    = "ami-04fba13aa6da74c92"
   subnet_id              = module.vpc.private_subnets[0]

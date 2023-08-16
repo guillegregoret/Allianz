@@ -6,17 +6,21 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 4.40"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 3.0"
+    }
   }
 }
 
 ## Locals
 
 locals {
-  name     = "allianz"
-  rds_name = "allianz_rds"
+  name     = var.project_name
+  rds_name = "${var.project_name}_rds"
   region   = "us-east-1"
   tags = {
-    Owner       = "allianz"
+    Owner       = "${var.project_name}"
     Environment = "staging"
   }
 }

@@ -1,6 +1,4 @@
-################################################################################
 # RDS
-################################################################################
 resource "aws_db_subnet_group" "rds-private-subnet" {
   name       = "rds-private-subnet-group"
   subnet_ids = [module.vpc.private_subnets[0], module.vpc.private_subnets[1]]
@@ -22,7 +20,7 @@ resource "aws_security_group_rule" "mysql_inbound_access" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
-resource "aws_db_instance" "allianz_mysql" {
+resource "aws_db_instance" "mysql" {
   allocated_storage           = 20
   storage_type                = "gp3"
   engine                      = "mysql"
@@ -42,4 +40,9 @@ resource "aws_db_instance" "allianz_mysql" {
   maintenance_window          = "Sat:00:00-Sat:03:00"
   multi_az                    = false
   skip_final_snapshot         = true
+  apply_immediately           = true
+
+  blue_green_update {
+    enabled = true
+  }
 }

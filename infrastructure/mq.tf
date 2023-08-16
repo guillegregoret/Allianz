@@ -1,6 +1,7 @@
 /*
+# RabbitMQ Service
 resource "aws_mq_broker" "allianz-mq" {
-  broker_name = "allianz-mq"
+  broker_name = "${var.project_name}-mq"
 
   engine_type        = "RabbitMQ"
   engine_version     = "3.10.10"
