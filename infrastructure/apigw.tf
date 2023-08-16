@@ -1,3 +1,4 @@
+/*
 resource "aws_apigatewayv2_api" "apigateway" {
   name          = "${var.project_name}-api-gateway"
   protocol_type = "HTTP"
@@ -131,3 +132,4 @@ resource "null_resource" "update_routes" {
   }
   depends_on = [aws_apigatewayv2_deployment.apigw]
 }
+*/
