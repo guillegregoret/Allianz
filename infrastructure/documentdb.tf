@@ -18,8 +18,8 @@ resource "aws_security_group_rule" "docdb_inbound_access" {
 resource "aws_docdb_cluster_instance" "cluster_instances" {
   identifier         = "docdb-cluster-${var.project_name}"
   cluster_identifier = aws_docdb_cluster.docdb_cluster.id
-  instance_class     = "db.t4g.medium"
-  apply_immediately               = true
+  instance_class     = "db.t3.medium"
+  apply_immediately  = true
   lifecycle {
     ignore_changes = [identifier]
   }

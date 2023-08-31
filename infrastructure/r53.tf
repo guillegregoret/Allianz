@@ -1,14 +1,15 @@
 ##Route53
+/*
 resource "aws_route53_zone" "main" {
   name = var.domain_name
 }
-
+*/
 ### R53 Records ###
 /*
 resource "aws_route53_record" "api" {
   name    = aws_apigatewayv2_domain_name.apigateway-domain-name.domain_name
   type    = "A"
-  zone_id = aws_route53_zone.main.zone_id
+  zone_id = var.zone_id
 
   alias {
     name                   = aws_apigatewayv2_domain_name.apigateway-domain-name.domain_name_configuration[0].target_domain_name
@@ -19,7 +20,7 @@ resource "aws_route53_record" "api" {
 */
 
 resource "aws_route53_record" "api" {
-  zone_id = aws_route53_zone.main.zone_id
+  zone_id = var.zone_id
   name    = "api.${var.domain_name}"
   type    = "A"
 
@@ -29,9 +30,9 @@ resource "aws_route53_record" "api" {
     evaluate_target_health = true
   }
 }
-
+/*
 resource "aws_route53_record" "root_domain" {
-  zone_id = aws_route53_zone.main.zone_id
+  zone_id = var.zone_id
   name    = var.domain_name
   type    = "A"
 
@@ -41,13 +42,13 @@ resource "aws_route53_record" "root_domain" {
     evaluate_target_health = false
   }
 }
-
+*/
 resource "aws_route53_record" "certificate_validation_record" {
   allow_overwrite = true
   name            = tolist(aws_acm_certificate.ssl_certificate.domain_validation_options)[0].resource_record_name
   records         = [tolist(aws_acm_certificate.ssl_certificate.domain_validation_options)[0].resource_record_value]
   type            = tolist(aws_acm_certificate.ssl_certificate.domain_validation_options)[0].resource_record_type
-  zone_id         = aws_route53_zone.main.zone_id
+  zone_id         = var.zone_id
   ttl             = 60
 }
 
@@ -56,6 +57,7 @@ resource "aws_route53_record" "certificate_validation_record" {
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
 }
+/*
 resource "cloudflare_record" "NS0" {
   zone_id = var.cloudflare_zone_id
   name    = var.project_name
@@ -84,3 +86,4 @@ resource "cloudflare_record" "NS3" {
   type    = "NS"
   ttl     = 600
 }
+*/

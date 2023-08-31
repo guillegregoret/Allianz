@@ -1,3 +1,4 @@
+/*
 resource "aws_s3_bucket_object" "frontend_html" {
   for_each     = fileset("frontend/", "*.html")
   bucket       = aws_s3_bucket.root_bucket.id
@@ -30,3 +31,4 @@ resource "aws_s3_bucket_object" "favicon" {
   etag     = filemd5("frontend/${each.value}")
 
 }
+*/

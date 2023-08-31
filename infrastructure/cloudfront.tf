@@ -1,5 +1,5 @@
 # Cloudfront - Frontend
-
+/*
 resource "aws_cloudfront_distribution" "root_s3_distribution" {
   origin {
     domain_name = aws_s3_bucket_website_configuration.root_bucket.website_endpoint
@@ -57,3 +57,4 @@ resource "aws_cloudfront_distribution" "root_s3_distribution" {
     minimum_protocol_version = "TLSv1.1_2016"
   }
 }
+*/

@@ -25,7 +25,7 @@ resource "aws_db_instance" "mysql" {
   storage_type                = "gp3"
   engine                      = "mysql"
   engine_version              = "8.0.28"
-  instance_class              = "db.t3.small"
+  instance_class              = "db.t3.micro"
   identifier                  = var.rds_db_name
   db_name                     = var.rds_db_name
   username                    = var.rds_username

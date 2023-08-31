@@ -1,6 +1,6 @@
 
 # S3 Bucket for static frontend
-
+/*
 resource "aws_s3_bucket" "root_bucket" {
 
   bucket = "${var.bucket_name}-${random_string.random_suffix.result}"
@@ -74,3 +74,4 @@ resource "random_string" "random_suffix" {
   special = false
   upper   = false
 }
+*/

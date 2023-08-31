@@ -67,3 +67,6 @@ variable "cloudflare_zone_id" {
 variable "environment" {
   type = string
 }
+variable "zone_id" {
+  type = string
+}

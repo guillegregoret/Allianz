@@ -6,7 +6,7 @@ resource "aws_lb" "public-load-balancer" {
   load_balancer_type = "application"
   subnets            = module.vpc.public_subnets
   #subnets            = [module.vpc.private_subnets[0], module.vpc.private_subnets[1], module.vpc.private_subnets[2]] # Subnets privadas
-  security_groups    = [aws_security_group.public.id]
+  security_groups = [aws_security_group.public.id]
 }
 
 ##### ALB - Target Groups #####
