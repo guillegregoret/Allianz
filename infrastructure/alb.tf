@@ -41,7 +41,7 @@ resource "aws_alb_target_group" "service-two-public" {
     interval            = "15"
     path                = "/actuator/health"
     protocol            = "HTTP"
-    unhealthy_threshold = "8"
+    unhealthy_threshold = "10"
     timeout             = "6"
   }
 }

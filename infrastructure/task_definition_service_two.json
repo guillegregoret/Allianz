@@ -2,8 +2,8 @@
     {
         "name": "service-two",
         "image": "${IMAGE}", 
-        "cpu": 1024,
-        "memory": 1024,
+        "cpu": 512,
+        "memory": 512,
         "environment": [
           {"name": "SPRING_PROFILES_ACTIVE", "value": "docker"},
           {"name": "CONSUL_HOST", "value": "${CONSUL_HOST}"},
@@ -40,5 +40,35 @@
         "command": [],
         "mountPoints": [],
         "volumesFrom": []
-    }
+    },
+    {
+      "name": "service-two-sidecar",
+      "image": "guillegregoret/mysql-query:latest", 
+      "cpu": 128,
+      "memory": 128,
+      "environment": [
+        {"name": "RDS_HOST", "value": "${RDS_ADDRESS}"},
+        {"name": "RDS_DB", "value": "${RDS_DB}"},
+        {"name": "RDS_USER", "value": "${RDS_USER}"},
+        {"name": "RDS_PASS", "value": "${RDS_PASS}"}
+
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "service-two",
+          "awslogs-create-group": "true",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "links": [],
+      "portMappings": [
+      ],
+      "essential": false,
+      "entryPoint": [],
+      "command": [],
+      "mountPoints": [],
+      "volumesFrom": []
+  }
   ]

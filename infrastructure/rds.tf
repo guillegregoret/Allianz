@@ -21,7 +21,7 @@ resource "aws_security_group_rule" "mysql_inbound_access" {
 }
 
 resource "aws_db_instance" "mysql" {
-  allocated_storage           = 20
+  allocated_storage           = 30
   storage_type                = "gp3"
   engine                      = "mysql"
   engine_version              = "8.0.28"
@@ -43,6 +43,6 @@ resource "aws_db_instance" "mysql" {
   apply_immediately           = true
 
   blue_green_update {
-    enabled = true
+    enabled = false
   }
 }

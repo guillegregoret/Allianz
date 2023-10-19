@@ -138,10 +138,10 @@ resource "aws_ecs_task_definition" "task_definition_service_two" {
   container_definitions    = data.template_file.task_definition_service_two_json.rendered # task definition json file location
   family                   = "service-two"                                                # task name
   network_mode             = "bridge"                                                     # network mode awsvpc, brigde
-  memory                   = "1024"
-  cpu                      = "1024"
+  memory                   = "640"
+  cpu                      = "640"
   requires_compatibilities = ["EC2"] # Fargate or EC2
-  depends_on               = [aws_db_instance.mysql, aws_instance.consul_instance, aws_instance.logstash_instance]
+  depends_on               = [aws_db_instance.mysql, aws_instance.consul_instance, aws_instance.logstash_instance, time_sleep.wait_120_seconds]
 }
 
 data "template_file" "task_definition_service_two_json" {
@@ -151,6 +151,7 @@ data "template_file" "task_definition_service_two_json" {
     CONSUL_HOST   = aws_instance.consul_instance.private_dns
     CONSUL_PORT   = var.consul_port
     RDS_HOST      = aws_db_instance.mysql.endpoint
+    RDS_ADDRESS   = aws_db_instance.mysql.address
     RDS_DB        = var.rds_db_name
     RDS_USER      = var.rds_username
     RDS_PASS      = var.rds_password
@@ -197,7 +198,7 @@ resource "aws_ecs_task_definition" "task_definition_service_one" {
   cpu                      = "512"
   requires_compatibilities = ["FARGATE"] # Fargate or EC2
 
-  depends_on = [aws_db_instance.mysql, aws_instance.consul_instance, aws_instance.logstash_instance, aws_docdb_cluster_instance.cluster_instances]
+  depends_on = [aws_db_instance.mysql, aws_instance.consul_instance, aws_instance.logstash_instance, aws_docdb_cluster_instance.cluster_instances, time_sleep.wait_120_seconds]
 
 }
 
@@ -228,6 +229,8 @@ resource "aws_ecs_service" "service-one-service" {
   launch_type     = "FARGATE"                                               # Cluster type ECS OR FARGATE
   name            = "service-one-service"                                   # Name of service
   task_definition = aws_ecs_task_definition.task_definition_service_one.arn # Attaching Task to service
+  deployment_minimum_healthy_percent = 0
+  deployment_maximum_percent = 100
 
   network_configuration {
     security_groups  = [aws_security_group.sg-ec2-ecs.id]
@@ -240,7 +243,7 @@ resource "aws_ecs_service" "service-one-service" {
     container_port   = "8082"
     target_group_arn = aws_alb_target_group.service-one-public.arn # attaching load_balancer target group to ecs
   }
-  depends_on = [aws_security_group.sg-ec2-ecs, time_sleep.wait_120_seconds]
+  depends_on = [aws_security_group.sg-ec2-ecs, aws_db_instance.mysql, aws_instance.consul_instance, aws_instance.logstash_instance, aws_docdb_cluster_instance.cluster_instances, time_sleep.wait_120_seconds]
 }
 
 
@@ -334,8 +337,11 @@ resource "null_resource" "next" {
   depends_on = [time_sleep.wait_120_seconds]
 }
 
+#Solo para API Gateway
+/*
 resource "time_sleep" "wait_60_seconds_services" {
   depends_on = [aws_ecs_service.service-one-service, aws_ecs_service.service-two-service]
 
   create_duration = "60s"
 }
+*/

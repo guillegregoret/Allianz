@@ -11,7 +11,7 @@ data "template_file" "user_data_logstash" {
 resource "aws_instance" "logstash_instance" {
   ami                    = "ami-04fba13aa6da74c92"
   subnet_id              = module.vpc.private_subnets[0]
-  instance_type          = "t2.micro"
+  instance_type          = "t2.small"
   private_ip             = "10.99.3.202"
   iam_instance_profile   = aws_iam_instance_profile.ecs_agent.name
   vpc_security_group_ids = [aws_security_group.sg-ec2-ecs.id]
